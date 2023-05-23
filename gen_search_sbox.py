@@ -27,6 +27,8 @@ def hw(n):
 
 
 def _bin(x, n ):
+    # print(type(x))
+    # print(type(n))
     return '0bin' + bin(x)[2:].zfill( n )
 
 def init_var():
@@ -60,6 +62,17 @@ def bijective(resy):
 
     for r in resy:
         cvc.append(f"ASSERT( {r[0]} /= {r[1]});")
+
+def non_bijective(resy):
+
+    temp = f"ASSERT("
+    for r in resy:
+        temp = temp + f"({r[0]} = {r[1]}) OR "
+    
+    temp = temp[:-3] + ");"
+
+    cvc.append(temp)
+    
 
 
 def without_fixed_point(lx,ly):
@@ -392,42 +405,21 @@ def req_bibo_lat(n):
     s = f"ASSERT( total_bibo_lat = {_bin(n,size+1)} );"
     cvc.append(s)
 
-def diff_uniform(du):
+def diff_uniform(du, u_hash):
 
     u_s = du["val"]
-    exp = du["exp"]
+    exp1 = du["exp"]
+    u_h = u_hash["val"]
+    exp2 = u_hash["exp"]
 
 
-    if exp == "==":
+    if exp1 == "==":
         for i in range(sb):
             for j in range(sb):
                 if i!=0:
                     s = f"ASSERT( BVLE(ddt_a{i}_b{j},{_bin(u_s,size+1)}) );"
                     cvc.append(s)
 
-    elif exp == "<=":
-
-        for i in range(sb):
-            for j in range(sb):
-                if i!=0:
-                    s = f"ASSERT( BVLE(ddt_a{i}_b{j},{_bin(u_s,size+1)}) );"
-                    cvc.append(s)
-
-
-
-def req_freq_diff_uniform(du,u_hash):
-
-    u_s = du["val"]
-    exp = du["exp"]
-
-
-    # Assert all ddt to be less than equal to u_s
-    #@MANAS: Do not get it 
-    # in case of 4 bit sbox value of differential uniformity can be 256 as well hence need 9 bits (2*n + 1)
-
-
-
-    if du["exp"] == "==":
 
         s = f"total_freq : BITVECTOR({(2*size)+1});"
         cvc.append(s)
@@ -461,17 +453,36 @@ def req_freq_diff_uniform(du,u_hash):
 
         cvc.append(s1)
 
-        if u_hash is None:
-            # if frequency is none but du is not none then to enforce the du, we the frequency to be atleast 1
+        if u_hash is None: 
             temp = 1
             s = f"ASSERT( BVGE(total_freq,{_bin(temp,(2*size)+1)}) );"
-        else:
-            s = f"ASSERT( total_freq = {_bin(u_hash,(2*size)+1)} );"
+        elif exp2 == "==":
+            temp = u_h
+            s = f"ASSERT( total_freq = {_bin(temp,(2*size)+1)} );"
+        elif exp2 == ">=":
+            temp = u_h
+            s = f"ASSERT( BVGE(total_freq,{_bin(temp,(2*size)+1)}) );"
+        elif exp2 == "<=":
+            temp = u_h
+            temp2 = 1
+            s = f"ASSERT( BVLE(total_freq,{_bin(temp,(2*size)+1)}) AND BVGE(total_freq,{_bin(temp2,(2*size)+1)})  );"
 
-        cvc.append(s)
 
+    elif exp1 == "<=":
 
-    elif du["exp"] == ">=":
+        # for setting the freq in this case we will need to know the du. 
+        # For knowing the du we will have to write some more code to find the max value of a ddt, and then use that value as a variable to set the freq
+
+        for i in range(sb):
+            for j in range(sb):
+                if i!=0:
+                    s = f"ASSERT( BVLE(ddt_a{i}_b{j},{_bin(u_s,size+1)}) );"
+                    cvc.append(s)
+
+    elif exp1 == ">=":
+
+        # follow same as above to set the freq.
+        # have not implemented it yet. 
 
         s = f"total_freq : BITVECTOR({(2*size)+1});"
         cvc.append(s)
@@ -508,6 +519,110 @@ def req_freq_diff_uniform(du,u_hash):
         temp = 1
         s = f"ASSERT( BVGE(total_freq,{_bin(temp,(2*size)+1)}) );"
         cvc.append(s)
+
+
+
+
+
+
+
+
+
+
+# def req_freq_diff_uniform(du,u_hash):
+
+#     u_s = du["val"]
+#     exp = du["exp"]
+
+
+#     # Assert all ddt to be less than equal to u_s
+#     #@MANAS: Do not get it 
+#     # in case of 4 bit sbox value of differential uniformity can be 256 as well hence need 9 bits (2*n + 1)
+
+
+
+#     if du["exp"] == "==":
+
+#         s = f"total_freq : BITVECTOR({(2*size)+1});"
+#         cvc.append(s)
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 s = f"istruef_a{i}_b{j} : BITVECTOR(1);"
+#                 cvc.append(s)
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 if i==0:
+#                     s = f"ASSERT ( istruef_a{i}_b{j} = {_bin(0,1)} );"
+#                     cvc.append(s)
+
+#                 if i!=0:
+#                     s = f"ASSERT( IF ddt_a{i}_b{j} = {_bin(u_s,size+1)} THEN istruef_a{i}_b{j} = {_bin(1,1)} ELSE istruef_a{i}_b{j} = {_bin(0,1)} ENDIF );"
+#                     cvc.append(s)
+
+#         s1 = f"ASSERT( total_freq = BVPLUS({(2*size)+1}, "
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 s1 = s1+ f"{_bin(0,2*size)}@istruef_a{i}_b{j}, "
+#                 # s1 = s1+ f"{_bin(0,size)}@istruef_a{i}_b{j}, "
+
+#         s1 = s1[:-2]+ "));"
+
+#         cvc.append(s1)
+
+#         if u_hash is None:
+#             # if frequency is none but du is not none then to enforce the du, we the frequency to be atleast 1
+#             temp = 1
+#             s = f"ASSERT( BVGE(total_freq,{_bin(temp,(2*size)+1)}) );"
+#         else:
+#             temp = u_hash["val"]
+#             s = f"ASSERT( total_freq = {_bin(temp,(2*size)+1)} );"
+
+#         cvc.append(s)
+
+
+#     elif u_hash["exp"] == ">=":
+
+#         s = f"total_freq : BITVECTOR({(2*size)+1});"
+#         cvc.append(s)
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 s = f"istruef_a{i}_b{j} : BITVECTOR(1);"
+#                 cvc.append(s)
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 if i==0:
+#                     s = f"ASSERT ( istruef_a{i}_b{j} = {_bin(0,1)} );"
+#                     cvc.append(s)
+#                 else:
+#                     s = f"ASSERT( IF BVGE(ddt_a{i}_b{j},{_bin(u_s,size+1)}) THEN istruef_a{i}_b{j} = {_bin(1,1)} ELSE istruef_a{i}_b{j} = {_bin(0,1)} ENDIF );"
+#                     cvc.append(s)
+
+
+#         s1 = f"ASSERT( total_freq = BVPLUS({(2*size)+1}, "
+
+#         for i in range(sb):
+#             for j in range(sb):
+
+#                 s1 = s1+ f"{_bin(0,2*size)}@istruef_a{i}_b{j}, "
+#                 # s1 = s1+ f"{_bin(0,size)}@istruef_a{i}_b{j}, "
+
+#         s1 = s1[:-2]+ "));"
+
+#         cvc.append(s1)
+
+#         temp = 1
+#         s = f"ASSERT( BVGE(total_freq,{_bin(temp,(2*size)+1)}) );"
+#         cvc.append(s)
 
 
 
@@ -733,17 +848,22 @@ def solve(data,cvc_name):
     blat = data["blat"]
     #expecting data["du"] to be a dictionary of the form {"val"... , "exp": ....}
     du = data["du"]
+    u_hash = data["frequency_du"]
     fdu = data["frequency_du"]
     lu = data["alu"]
     flu = data["frequency_alu"]
     is_bct = data["bct"]
     is_involution = data["involution"]
     lookup = data["lookup"]
+    is_bijective = data["is_bijective"]
     lx,ly,resx,resy = basic_vars()
 
     init_var()
     def_sbox() 
-    bijective(resy)
+    if is_bijective:
+        bijective(resy)
+    else:
+        non_bijective(resy)
     # non_linear(resx)   #THIS OPTION IS NOT REQUIRED, WILL CREATE PROBLEMS
     def_sinv()
     if lookup is not None:
@@ -778,8 +898,8 @@ def solve(data,cvc_name):
             diff_uniform(du)
             test_fn(du)
         else:
-            diff_uniform(du)
-            req_freq_diff_uniform(du,fdu)
+            diff_uniform(du, u_hash)
+            # req_freq_diff_uniform(du,fdu)
 
         # diff_uniform(du)
         # req_freq_diff_uniform(du,fdu)
