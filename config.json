@@ -1,0 +1,49 @@
+{
+   "global_timeout": null,
+   "sequential": true,
+   "output_dir": null, 
+   "debug": true, 
+   "my_sbox1": {
+      "size": 4,
+      "fp": null,
+      "du": null,
+      "frequency_du": null,
+      "alu": {
+         "val": 8,
+         "exp": "=="
+      },
+      "frequency_alu": 1,
+      "bddt": null,
+      "blat": null,
+      "dbn": null,
+      "lbn": null,
+      "bct": false,
+      "involution": false,
+      "lookup": null,
+      "solution_fn": null,
+      "time_out": null
+   },
+   "my_sbox2": {
+      "size": 4,
+      "fp": null,
+      "du": {
+         "val": 8,
+         "exp": "=="
+      },
+      "frequency_du": {
+         "val": 4,
+         "exp": ">="
+      },
+      "alu": null,
+      "frequency_alu": null,
+      "bddt": null,
+      "blat": null,
+      "dbn": null,
+      "lbn": null,
+      "bct": false,
+      "involution": false,
+      "lookup": null,
+      "solution_fn": null,
+      "time_out": null
+   }
+ }
