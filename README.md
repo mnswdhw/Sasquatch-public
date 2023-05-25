@@ -57,7 +57,7 @@ To find an SBox $S$, the following parameters/options are supported:
 3. The final SBox (if found) satisfying the required properties can be found in `<solution_fn>_<timestamp>_<PID>.txt`. 
 4. The file `<stpo_fn>_<timestamp>_<PID>.txt` shows the assignment to the variables that satisfy the required constraints. If we find a solution, then after all the assignments, `INVALID` will be written. Else, if no solution is found then `VALID` will be written.   
 
-### Command/Output (on Terminal)
+### Terminal Command
 ```
 $ python3 sasquatch_run.py
 ```
@@ -67,8 +67,6 @@ $ python3 sasquatch_run.py
 
 ### Generated SBox (file name)
 -->
-### Logging ([`sasquatch.log`](sasquatch.log))
-This file records every SBox search input and output files. Locks have been implemented to prevent race conditions in this file, in case multiprocessing is used. 
 
 ### Sample Configuration ([`config.json`](config.json))
 ```
@@ -122,8 +120,10 @@ This file records every SBox search input and output files. Locks have been impl
    }
  }
  ```
+### Sample Logging ([`sasquatch.log`](sasquatch.log))
+This file records every SBox search input and output files. Locks have been implemented to prevent race conditions in this file, in case multiprocessing is used. 
 
-## Note
+### Note
 * All the options are compulsory, `null` can be specified if no constraint is imposed (e.g., `"lbn": null`).
 * In case of conflicting options for parameters, some parameters may be ignored (a warning will be thrown in such a situation). Examples (including, but not limited to): 
    * If `frequency_du` is not `null` then `du` must also not be `null`.
