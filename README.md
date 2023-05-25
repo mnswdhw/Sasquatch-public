@@ -1,7 +1,7 @@
 # Sasquatch (Search for SBox using STP) 
 _Release: 25 May 2023._
 
-This repository contains source codes and related material for the paper; **"Finding Desirable Substitution Boxes with SASQUATCH"** ([ePrint]()); by Manas Wadhwa, Anubhab Baksi and others.
+This repository contains source codes and related material for the paper; **"Finding Desirable Substitution Boxes with SASQUATCH"** ([IACR ePrint](https://eprint.iacr.org/2023/742)); by Manas Wadhwa, Anubhab Baksi and others.
 
 The objective is to find SBox for various cryptographic operations as specified by a set of given constraints, using the [Simple Theorem Prover (STP)](https://stp.github.io/) solver. On running the command, one SBox will be found satisfying the required criteria mentioned in the configuration file. 
 
