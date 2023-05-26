@@ -21,7 +21,7 @@ To find an SBox $S$, the following parameters/options are supported:
 * `stpo_fn`: Name of file with the STP solution (this file will be generated/overwritten, not intended for reading by a human). Default is `stp_output_<timestamp>_<PID>.txt`. 
 * `is_bct`: Accepts Boolean `true` or `false` depending on whether boomerang connectivity table is required or not. 
 * `global_timeout`: Specify the time in seconds, it will wait for finding each sboxe mentioned in the configuration file. If this parameter is specified then it will override the individual timeout option of a particular sbox.
-
+* `is_bijective`: Accepts Boolean `true` or `false` depending on whether the desired SBox is required to be bijective or not. 
 
 ## Directory Structure
 
