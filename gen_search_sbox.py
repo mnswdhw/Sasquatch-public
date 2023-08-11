@@ -409,9 +409,10 @@ def diff_uniform(du, u_hash):
 
     u_s = du["val"]
     exp1 = du["exp"]
-    u_h = u_hash["val"]
-    exp2 = u_hash["exp"]
 
+    if u_hash is not None:
+        u_h = u_hash["val"]
+        exp2 = u_hash["exp"]
 
     if exp1 == "==":
         for i in range(sb):
@@ -892,17 +893,24 @@ def solve(data,cvc_name):
  
     if du is not None:
 
-        exp = du["exp"]
+        # exp = du["exp"]
 
-        if (exp == "==") and (fdu is None):
-            diff_uniform(du)
-            test_fn(du)
+        # if (exp == "==") and (fdu is None):
+        #     diff_uniform(du)
+        #     test_fn(du)
+        # else:
+        #     diff_uniform(du, u_hash)
+        #     # req_freq_diff_uniform(du,fdu)
+
+        # # diff_uniform(du)
+        # # req_freq_diff_uniform(du,fdu)
+
+
+        if fdu is None: 
+            u_hash = None
         else:
-            diff_uniform(du, u_hash)
-            # req_freq_diff_uniform(du,fdu)
-
-        # diff_uniform(du)
-        # req_freq_diff_uniform(du,fdu)
+            u_hash = fdu
+        diff_uniform(du, u_hash)
         
 
     if lu is not None:
