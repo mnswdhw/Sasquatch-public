@@ -8,8 +8,8 @@ The objective is to find SBox for various cryptographic operations as specified 
 ## Feature and Option
 To find an SBox $S$, the following parameters/options are supported:
 
-* `size`: Size of $S$ ($n$). Expects an integer $ 3 \leq n$ (may not work efficiently for $n \geq 6$). 
-* `fp` (fixed point): When `true`, $S[x] = x$, for some $x$: Accepts Boolean value `true` or `false`. 
+* `size`: Size of $S$ (denoted by $n$). Expects an integer $3 \leq n$ (may not work efficiently for $n \geq 6$). 
+* `fp` (fixed point): When `true`, $S(x) = x$, for some $x$: Accepts Boolean value `true` or `false`. 
 * `du` (differential uniformity): Expects values from $2$ (inclusive) to $2^n$ (inclusive)
 * `frequency_du` (frequency of differential uniformity): Expects values from $0$ to $2^{n+1}$. 
 * `lu` (linear uniformity): Expects values from $-2^{n-1}$ (inclusive) to $2^{n-1}$ (inclusive).
@@ -20,8 +20,9 @@ To find an SBox $S$, the following parameters/options are supported:
 * `solution_fn`: Name of solution file (this file will be generated/overwritten and will contain the SBox in a comma separated decimal format). Default is `final_sol_<timestamp>_<PID>.sbox`. This file contains the final solution as INPUT and OUTPUT. If no sbox is found, OUTPUT will mention VALID and an empty sbox. If a sbox is found, then at the end of the file, VALID will be written along with the exact Sbox as an array of comma separated values.  
 * `stpo_fn`: Name of file with the STP solution (this file will be generated/overwritten, not intended for reading by a human). Default is `stp_output_<timestamp>_<PID>.txt`. 
 * `is_bct`: Accepts Boolean `true` or `false` depending on whether boomerang connectivity table is required or not. 
-* `global_timeout`: Specify the time in seconds, it will wait for finding each sboxe mentioned in the configuration file. If this parameter is specified then it will override the individual timeout option of a particular sbox.
 * `is_bijective`: Accepts Boolean `true` or `false` depending on whether the desired SBox is required to be bijective or not. 
+* `global_timeout`: Specify the time in seconds, it will wait for finding each sboxe mentioned in the configuration file. If this parameter is specified then it will override the individual timeout option of a particular sbox.
+
 
 ## Directory Structure
 
@@ -47,21 +48,26 @@ To find an SBox $S$, the following parameters/options are supported:
 ## Dependency
 
 * **STP:** Installation instruction for the STP solver can be found [here](https://github.com/stp/stp).
-* **Pebble:** Installation instruction can be referred to [here](https://pypi.org/project/Pebble/). 
-* Our tool is tested with (Python 3.7.6, STP 2.3.3, Pebble 4.6.3 running on Ubuntu 20.04.4 LTS).
+* **Pebble:** This is required for parallel processing. Installation instruction can be found [here](https://pypi.org/project/Pebble/). 
+* Our tool is tested with (Python 3.7.6, STP 2.3.3, Pebble 4.6.3 running on Ubuntu 20.04.4 LTS) among other platforms.
 
 ## How-to-run
   
 1. Edit (as needed) the parameters in the configuration file [`config.json`](config.json) is used by default) for finding the corresponding SBox. 
 2. Enter the command `python3 sasquatch_run.py`. In this case, [`config.json`](config.json) is passed implicitly. The solution file and STP output file with names as provided in the configuration file appended with time and process PID are generated in the same directory. If one wants, the configuration file can be specified as `python3 sasquatch_run.py <configuration file>`. 
-3. The final SBox (if found) satisfying the required properties can be found in `<solution_fn>_<timestamp>_<PID>.txt`. 
-4. The file `<stpo_fn>_<timestamp>_<PID>.txt` shows the assignment to the variables that satisfy the required constraints. If we find a solution, then after all the assignments, `INVALID` will be written. Else, if no solution is found then `VALID` will be written.   
+3. The final SBox (if found) satisfying the required properties can be found in `<solution_fn>_<timestamp>_<PID>.sbox`. 
+4. The file `<stpo_fn>_<timestamp>_<PID>.sbox` shows the assignment to the variables that satisfy the required constraints. If we find a solution, then after all the assignments, `INVALID` will be written. Else, if no solution is found then `VALID` will be written.   
 
 ### Terminal Command
+If no configuration file is provided, then the tool will run the default option of `config.json`:
 ```
 $ python3 sasquatch_run.py
 ```
 
+Otherwise, the configuration file can be provided (in this case this is denoted by `<config.json>`):
+```
+$ python3 sasquatch_run.py <config.json>
+```
 <!--
 ### CVC Output (file name)
 
@@ -92,6 +98,7 @@ $ python3 sasquatch_run.py
       "bct": false,
       "involution": false,
       "lookup": null,
+      "is_bijective": true,
       "solution_fn": null,
       "time_out": null
    },
@@ -114,6 +121,7 @@ $ python3 sasquatch_run.py
       "lbn": null,
       "bct": false,
       "involution": false,
+      "is_bijective": true,
       "lookup": null,
       "solution_fn": null,
       "time_out": null
@@ -131,6 +139,7 @@ This file records every SBox search input and output files. Locks have been impl
 * The option `du` supersedes this option (if `du` is not null then `frequency_du` will be automatically assumed to be at least $1$).
 * The option `lu` supersedes this option (if `lu` is not null then `frequency_alu` will be automatically assumed to be at least $1$). 
 * There an option to switch off logging all the information in the non-developer mode.
+* For `is_bijective`, `false` and `null` behave identically.
 
 ## Known Issue
 * Although this may seem counterintuitive, when we specify `QUERY FALSE;` in the CVC file (which is used as the input to STP solver), it will look for all possible values in the search space and if it finds any that satisfies all the assertions then the query is not false. By including the line `Counterexample;` to the CVC file, it shows the particular assignment for which it is not false. Hence, `INVALID` means that the query is not false as we found some set of values that satisfy all the assertions. If we do not find any set of values that satisfy all the assertions then the output will be `VALID` as the query is actually false for any possible set of values. 
