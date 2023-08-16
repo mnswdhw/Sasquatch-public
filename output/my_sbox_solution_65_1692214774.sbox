@@ -1,0 +1,7 @@
+Start: 2023-08-16_19:39:34
+Host: DESKTOP-V5DH54H
+INPUT
+{"size": 4, "fp": null, "du": null, "frequency_du": null, "alu": {"val": 4, "exp": "<="}, "frequency_alu": {"val": 4, "exp": "<="}, "bddt": null, "blat": null, "dbn": null, "lbn": null, "bct": false, "involution": false, "lookup": null, "solution_fn": null, "time_out": null, "is_bijective": true, "global_timeout": null, "sequential": true, "output_dir": null, "debug": true}
+
+OUTPUT
+my_sbox : []

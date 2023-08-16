@@ -3,19 +3,19 @@
    "sequential": true,
    "output_dir": null, 
    "debug": true, 
-   "my_sbox3": {
+   "my_sbox": {
       "size": 4,
       "fp": null,
-      "du": {
+      "du": null,
+      "frequency_du": null,
+      "alu": {
          "val": 4,
          "exp": ">="
       },
-      "frequency_du": {
+      "frequency_alu": {
          "val": 4,
          "exp": ">="
       },
-      "alu": null,
-      "frequency_alu": null,
       "bddt": null,
       "blat": null,
       "dbn": null,
